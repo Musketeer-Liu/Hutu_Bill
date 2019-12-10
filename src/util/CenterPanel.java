@@ -1,5 +1,6 @@
 package util;
 
+import gui.panel.WorkingPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,9 +9,9 @@ import java.awt.*;
  * 由于 Swing没有提供可以居中的布局器，需要自己开发一个特别的类，继承自 JPanel
  */
 public class CenterPanel extends JPanel {
-    private double rate;
-    private JComponent c;
-    private boolean strech;
+    private double rate; // 拉伸比例
+    private JComponent c; // 显示的组件
+    private boolean strech; // 是否拉伸
 
     public CenterPanel(double rate, boolean strech) {
         this.setLayout(null);
@@ -45,6 +46,10 @@ public class CenterPanel extends JPanel {
             remove(c);
         }
         add(p);
+
+        if (p instanceof WorkingPanel) {
+            ((WorkingPanel) p).updateData();
+        }
         this.updateUI();
     }
 
