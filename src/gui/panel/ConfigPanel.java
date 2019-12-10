@@ -48,7 +48,6 @@ public class ConfigPanel extends JPanel {
         bSubmit.addActionListener(l);
     }
 
-
     public static void main(String[] args) {
         GUIUtil.showPanel(ConfigPanel.instance);
     }

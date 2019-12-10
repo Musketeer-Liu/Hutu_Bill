@@ -3,7 +3,7 @@ package entity;
 public class Category {
     public int id;
     public String name;
-    public int recordName;
+    public int recordNumber;
 
     public int getId() {
         return id;
@@ -21,11 +21,11 @@ public class Category {
         this.name = name;
     }
 
-    public int getRecordName() {
-        return recordName;
+    public int getRecordNumber() {
+        return recordNumber;
     }
 
-    public void setRecordName(int recordName) {
-        this.recordName = recordName;
+    public void setRecordNumber(int recordName) {
+        this.recordNumber = recordNumber;
     }
 }
