@@ -1,4 +1,102 @@
 package dao;
 
+import entity.Category;
+import util.DBUtil;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CategoryDAO {
+    public int getTotal() {
+        int total = 0;
+        try (Connection c = DBUtil.getConnection(); Statement s = c.createStatement();) {
+            String sql = "SELECT COUNT(*) FROM category";
+            ResultSet rs = s.executeQuery(sql);
+            while (rs.next()) {
+                total = rs.getInt(1);
+            }
+            System.out.println("total: " + total);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public void add(Category category) {
+        String sql = "INSERT INTO category values (null, ?)";
+        try (Connection c = DBUtil.getConnection(); PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setString(1, category.name);
+            ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                category.id = id;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void update(Category category) {
+        String sql = "UPDATE config SET name = ? WHERE id = ?";
+        try (Connection c = DBUtil.getConnection(); PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setString(1, category.name);
+            ps.setInt(2, category.id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(int id) {
+        try (Connection c = DBUtil.getConnection(); Statement s = c.createStatement();) {
+            String sql = "DELETE FROM category WHERE id = " + id;
+            s.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Category get(int id) {
+        Category category = null;
+        try (Connection c = DBUtil.getConnection(); Statement s = c.createStatement();) {
+            String sql = "SELECT * FROM category WHERE id = " + id;
+            ResultSet rs = s.executeQuery(sql);
+            if(rs.next()) {
+                category = new Category();
+                String name = rs.getString(2); // rs.getString("name")
+                category.name = name;
+                category.id = id;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return category;
+    }
+
+    public List<Category> list() {
+        return list(0, Short.MAX_VALUE);
+    }
+
+    public List<Category> list(int start, int count) {
+        List<Category> categorys = new ArrayList<Category>();
+        String sql = "SELECT * FROM category ORDER BY id DESC LIMIT ?, ?";
+        try (Connection c = DBUtil.getConnection(); PreparedStatement ps = c.prepareStatement(sql);) {
+            ps.setInt(1, start);
+            ps.setInt(2, count);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Category category = new Category();
+                int id = rs.getInt(1);
+                String name = rs.getString("name"); // rs.getString(2)
+                category.id = id;
+                category.name = name;
+                categorys.add(category);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categorys;
+    }
+
 }
