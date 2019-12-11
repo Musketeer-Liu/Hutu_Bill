@@ -1,14 +1,16 @@
 package gui.panel;
 
-import entity.Record;
-import gui.model.CategoryComboBowModel;
+import entity.Category;
+import gui.listener.RecordListener;
+import gui.model.CategoryComboBoxModel;
+import service.CategoryService;
 import util.ColorUtil;
 import util.GUIUtil;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class RecordPanel extends JPanel {
+public class RecordPanel extends WorkingPanel {
     static {
         GUIUtil.useLNF();
     }
@@ -21,7 +23,7 @@ public class RecordPanel extends JPanel {
     
     public JTextField tfSpend = new JTextField("0");
     
-    public CategoryComboBowModel cbModel = new CategoryComboBowModel();
+    public CategoryComboBoxModel cbModel = new CategoryComboBoxModel();
     public JComboBox<String> cbCategory = new JComboBox<>(cbModel);
     public JTextField tfComment = new JTextField();
     public JXDatePicker datepick = new JXDatePicker(new Date());
@@ -53,5 +55,32 @@ public class RecordPanel extends JPanel {
 
     public static void main(String[] args) {
         GUIUtil.showPanel(RecordPanel.instance);
+    }
+
+    public Category getSelectedCategory() {
+        return (Category) cbCategory.getSelectedItem();
+    }
+
+    @Override
+    public void updateData() {
+        cbModel.cs = new CategoryService().list();
+        cbCategory.updateUI();
+        resetInput();
+        tfSpend.grabFocus();
+    }
+
+    private void resetInput() {
+        tfSpend.setText("0");
+        tfComment.setText("");
+        if(0 != cbModel.cs.size()) {
+            cbCategory.setSelectedIndex(0);
+        }
+        datepick.setDate(new Date());
+    }
+
+    @Override
+    public void addListener() {
+        RecordListener listener = new RecordListener();
+        bSubmit.addActionListener(listener);
     }
 }

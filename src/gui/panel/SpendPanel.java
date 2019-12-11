@@ -1,5 +1,7 @@
 package gui.panel;
 
+import gui.page.SpendPage;
+import service.SpendService;
 import util.CircleProgressBar;
 import util.ColorUtil;
 import util.GUIUtil;
@@ -7,11 +9,7 @@ import util.GUIUtil;
 import javax.swing.*;
 import java.awt.*;
 
-public class SpendPanel extends JPanel {
-    static {
-        GUIUtil.useLNF();
-    }
-
+public class SpendPanel extends WorkingPanel {
     public static SpendPanel instance = new SpendPanel();
 
     JLabel lMonthSpend = new JLabel("本月消费");
@@ -50,11 +48,11 @@ public class SpendPanel extends JPanel {
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout());
         p.add(west(), BorderLayout.WEST);
-        p.add(center2(), BorderLayout.CENTER);
+        p.add(east());
         return p;
     }
 
-    private Component center2() {
+    private Component east() {
         return bar;
     }
 
@@ -86,5 +84,34 @@ public class SpendPanel extends JPanel {
 
     public static void main(String[] args) {
         GUIUtil.showPanel(SpendPanel.instance);
+    }
+
+    @Override
+    public void updateData() {
+        SpendPage spend = new SpendService().getSpendPage();
+        vMonthSpend.setText(spend.monthSpend);
+        vTodaySpend.setText(spend.todaySpend);
+        vAvgSpendPerDay.setText(spend.avgSpendPerDay);
+        vMonthAvailable.setText(spend.monthAvailable);
+        vDayAvgAvailable.setText(spend.dayAvgAvailable);
+        vMonthLeftDay.setText(spend.monthLeftDay);
+
+        bar.setProgress(spend.usagePercentage);
+        if (spend.isOverSpend) {
+            vMonthAvailable.setForeground(ColorUtil.warningColor);
+            vMonthSpend.setForeground(ColorUtil.warningColor);
+            vTodaySpend.setForeground(ColorUtil.warningColor);
+        } else {
+            vMonthAvailable.setForeground(ColorUtil.grayColor);
+            vMonthSpend.setForeground(ColorUtil.blueColor);
+            vTodaySpend.setForeground(ColorUtil.blueColor);
+        }
+        bar.setForegroundColor(ColorUtil.getByPercentage(spend.usagePercentage));
+        addListener();
+    }
+
+    @Override
+    public void addListener() {
+
     }
 }
